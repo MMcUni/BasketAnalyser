@@ -3,10 +3,10 @@ import scala.util.{Try, Using, Success, Failure}
 
 object Main extends App {
   // Define the file path for the data file
-  val filename = "src/main/data.txt"
+  private val filename = "src/main/data.txt"
 
   // Read the file and parse each line into a map of food items and their prices
-  val data: Try[Map[String, List[Int]]] = Using(Source.fromFile(filename)) { source =>
+  private val data: Try[Map[String, List[Int]]] = Using(Source.fromFile(filename)) { source =>
     source.getLines().map(parseLine).toMap
   }
 
@@ -20,7 +20,7 @@ object Main extends App {
    * @param line The line from the data file.
    * @return A tuple containing the food item and a list of prices.
    */
-  def parseLine(line: String): (String, List[Int]) = {
+  private def parseLine(line: String): (String, List[Int]) = {
     val parts = line.split(", ")
     // Extract the food item name and the list of prices
     (parts.head, parts.tail.toList.map(_.toInt))
