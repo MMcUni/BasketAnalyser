@@ -1,39 +1,31 @@
 import analysis.PriceAnalyzer
 import scala.io.Source
-import scala.util.{Try, Using, Success, Failure}
+import scala.util.{Failure, Success, Try, Using}
 import scala.io.StdIn.readLine
 
-/**
- * Main object serving as the entry point for the BasketAnalyzer application.
- * This application provides a menu-driven interface for analyzing food price data.
- */
 object Main extends App {
-  // Define the file path for the data file containing food prices.
-  private val filename = "src/main/data.txt"
-
-  /**
-   * Read the data file and parse each line into a map of food items and their prices.
-   * Each line in the file represents a food item followed by its prices over time.
-   */
-  private val data: Try[Map[String, List[Int]]] = Using(Source.fromFile(filename)) { source =>
-    source.getLines().map(parseLine).toMap
+  DataManager.readData match {
+    case Success(data) => runApp(data)
+    case Failure(exception) => println(s"Error reading data: ${exception.getMessage}")
   }
 
-  /**
-   * Parses a single line from the data file into a tuple.
-   * The line is expected to be in the format: "ItemName, price1, price2, ..."
-   *
-   * @param line The line to parse.
-   * @return A tuple of the food item name and a list of its prices.
-   */
-  private def parseLine(line: String): (String, List[Int]) = {
-    val parts = line.split(", ")
-    (parts.head, parts.tail.toList.map(_.toInt))
-  }
+  def runApp(data: Map[String, List[Int]]): Unit = {
+    var continueRunning = true
+    while (continueRunning) {
+      MenuManager.displayMainMenu()
+      val choice = readLine()
 
-  /**
-   * Displays the main menu options to the console.
-   */
+      choice match {
+        case "1" => PriceAnalysisManager.performPriceAnalysis(data)
+        case "2" => ShoppingManager.goShopping(data)
+        case "3" => continueRunning = false
+        case _ => println("Invalid choice. Please try again.")
+      }
+    }
+  }
+}
+
+object MenuManager {
   def displayMainMenu(): Unit = {
     println("\nMain Menu:")
     println("1. Price Analysis")
@@ -42,9 +34,6 @@ object Main extends App {
     print("Enter your choice: ")
   }
 
-  /**
-   * Displays the price analysis menu options to the console.
-   */
   def displayPriceAnalysisMenu(): Unit = {
     println("\nPrice Analysis Menu:")
     println("1. Current Food Prices")
@@ -55,134 +44,121 @@ object Main extends App {
     println("6. Back")
     print("Enter your choice: ")
   }
+}
 
-  /**
-   * Handles the user interaction for price analysis.
-   * Allows the user to select different types of price analysis and view the results.
-   */
-  def performPriceAnalysis(): Unit = {
+object DataManager {
+  private val filename = "src/main/data.txt"
+
+  def readData: Try[Map[String, List[Int]]] = {
+    Using(Source.fromFile(filename)) { source =>
+      source.getLines().map(parseLine).toMap
+    }
+  }
+
+  private def parseLine(line: String): (String, List[Int]) = {
+    val parts = line.split(", ")
+    (parts.head, parts.tail.toList.map(_.toInt))
+  }
+}
+
+object PriceAnalysisManager {
+  def performPriceAnalysis(data: Map[String, List[Int]]): Unit = {
     var continueAnalysis = true
     while (continueAnalysis) {
-      displayPriceAnalysisMenu()
+      MenuManager.displayPriceAnalysisMenu()
       val choice = readLine()
 
       choice match {
-        case "1" => displayCurrentPrices()
-        case "2" => displayPriceRange()
-        case "3" => displayMedianPrices()
-        case "4" => displayLargestPriceIncrease()
-        case "5" => compareAveragePrices()
+        case "1" => displayCurrentPrices(data)
+        case "2" => displayPriceRange(data)
+        case "3" => displayMedianPrices(data)
+        case "4" => displayLargestPriceIncrease(data)
+        case "5" => compareAveragePrices(data)
         case "6" => continueAnalysis = false
         case _ => println("Invalid choice. Please try again.")
       }
     }
-  }
 
-  /**
-   * Displays the current food prices to the console.
-   */
-  def displayCurrentPrices(): Unit = {
-    data match {
-      case Success(parsedData) =>
-        val currentPrices = PriceAnalyzer.getCurrentPrices(parsedData)
-        println("\nCurrent Food Prices:")
-        currentPrices.foreach { case (food, price) => println(s"$food: $price") }
-      case Failure(exception) =>
-        println(s"An error occurred while processing the data: ${exception.getMessage}")
+    /**
+     * Displays the current food prices to the console.
+     */
+    def displayCurrentPrices(data: Map[String, List[Int]]): Unit = {
+      val currentPrices = PriceAnalyzer.getCurrentPrices(data)
+      println("\nCurrent Food Prices:")
+      currentPrices.foreach { case (food, price) => println(s"$food: $price") }
     }
-  }
 
-  /**
-   * Displays the price range (minimum and maximum prices) for each food item to the console.
-   */
-  def displayPriceRange(): Unit = {
-    data match {
-      case Success(parsedData) =>
-        val minMaxPrices = PriceAnalyzer.getMinMaxPrices(parsedData)
-        println("\nPrice Range (Min and Max) for Each Food Item:")
-        minMaxPrices.foreach { case (food, (min, max)) =>
-          println(s"$food: Min = $min, Max = $max")
+
+    /**
+     * Displays the price range (minimum and maximum prices) for each food item to the console.
+     */
+    def displayPriceRange(data: Map[String, List[Int]]): Unit = {
+      val minMaxPrices = PriceAnalyzer.getMinMaxPrices(data)
+      println("\nPrice Range (Min and Max) for Each Food Item:")
+      minMaxPrices.foreach { case (food, (min, max)) => println(s"$food: Min = $min, Max = $max") }
+    }
+
+
+    def displayMedianPrices(data: Map[String, List[Int]]): Unit = {
+      println("\nMedian Prices for Each Food Item:")
+      data.foreach { case (food, prices) =>
+        val medianPrice = PriceAnalyzer.getMedianPrice(prices)
+        println(s"$food: Median Price = $medianPrice")
+      }
+    }
+
+
+    def displayLargestPriceIncrease(data: Map[String, List[Int]]): Unit = {
+      val (food, increase) = PriceAnalyzer.getLargestPriceIncrease(data)
+      println(s"\nLargest Price Increase in Last 6 Months:")
+      println(s"$food with an increase of $increase")
+    }
+
+
+    def displayFoodListWithNumbers(foodItems: List[String]): Unit = {
+      println("\nAvailable Food Items:")
+      foodItems.zipWithIndex.foreach { case (food, index) =>
+        println(s"${index + 1}. $food")
+      }
+    }
+
+    def compareAveragePrices(data: Map[String, List[Int]]): Unit = {
+      val foodItems = data.keys.toList
+      displayFoodListWithNumbers(foodItems)
+
+      println("\nEnter the number for the first food item:")
+      val firstIndex = scala.io.StdIn.readInt() - 1
+      println("Enter the number for the second food item:")
+      val secondIndex = scala.io.StdIn.readInt() - 1
+
+      val firstFood = foodItems.lift(firstIndex).getOrElse("Unknown")
+      val secondFood = foodItems.lift(secondIndex).getOrElse("Unknown")
+
+      val firstAvg = data.get(firstFood).map(PriceAnalyzer.getAveragePrice).getOrElse(0.0)
+      val secondAvg = data.get(secondFood).map(PriceAnalyzer.getAveragePrice).getOrElse(0.0)
+
+      println(s"\nAverage Price Comparison:")
+      println(s"$firstFood: $firstAvg")
+      println(s"$secondFood: $secondAvg")
+
+      // Adding a summary sentence
+      if (firstAvg != 0.0 && secondAvg != 0.0) {
+        val difference = (firstAvg - secondAvg).abs
+        val summary = if (firstAvg > secondAvg) {
+          s"Over the last 2 years, $firstFood is $difference more expensive than $secondFood."
+        } else if (secondAvg > firstAvg) {
+          s"Over the last 2 years, $secondFood is $difference more expensive than $firstFood."
+        } else {
+          s"Over the last 2 years, $firstFood and $secondFood have the same average price."
         }
-      case Failure(exception) =>
-        println(s"An error occurred while processing the data: ${exception.getMessage}")
+        println(summary)
+      }
     }
   }
+}
 
-  def displayMedianPrices(): Unit = {
-    data match {
-      case Success(parsedData) =>
-        println("\nMedian Prices for Each Food Item:")
-        parsedData.foreach { case (food, prices) =>
-          val medianPrice = PriceAnalyzer.getMedianPrice(prices)
-          println(s"$food: Median Price = $medianPrice")
-        }
-      case Failure(exception) =>
-        println(s"An error occurred while processing the data: ${exception.getMessage}")
-    }
-  }
-
-  def displayLargestPriceIncrease(): Unit = {
-    data match {
-      case Success(parsedData) =>
-        val (food, increase) = PriceAnalyzer.getLargestPriceIncrease(parsedData)
-        println(s"\nLargest Price Increase in Last 6 Months:")
-        println(s"$food with an increase of $increase")
-      case Failure(exception) =>
-        println(s"An error occurred while processing the data: ${exception.getMessage}")
-    }
-  }
-
-  def displayFoodListWithNumbers(foodItems: List[String]): Unit = {
-    println("\nAvailable Food Items:")
-    foodItems.zipWithIndex.foreach { case (food, index) =>
-      println(s"${index + 1}. $food")
-    }
-  }
-
-  def compareAveragePrices(): Unit = {
-    data match {
-      case Success(parsedData) =>
-        val foodItems = parsedData.keys.toList
-        displayFoodListWithNumbers(foodItems)
-
-        println("\nEnter the number for the first food item:")
-        val firstIndex = scala.io.StdIn.readInt() - 1
-        println("Enter the number for the second food item:")
-        val secondIndex = scala.io.StdIn.readInt() - 1
-
-        val firstFood = foodItems.lift(firstIndex).getOrElse("Unknown")
-        val secondFood = foodItems.lift(secondIndex).getOrElse("Unknown")
-
-        val firstAvg = parsedData.get(firstFood).map(PriceAnalyzer.getAveragePrice).getOrElse(0.0)
-        val secondAvg = parsedData.get(secondFood).map(PriceAnalyzer.getAveragePrice).getOrElse(0.0)
-
-        println(s"\nAverage Price Comparison:")
-        println(s"$firstFood: $firstAvg")
-        println(s"$secondFood: $secondAvg")
-
-        // Adding a summary sentence
-        if (firstAvg != 0.0 && secondAvg != 0.0) {
-          val difference = (firstAvg - secondAvg).abs
-          val summary = if (firstAvg > secondAvg) {
-            s"Over the last 2 years, $firstFood is $difference more expensive than $secondFood."
-          } else if (secondAvg > firstAvg) {
-            s"Over the last 2 years, $secondFood is $difference more expensive than $firstFood."
-          } else {
-            s"Over the last 2 years, $firstFood and $secondFood have the same average price."
-          }
-          println(summary)
-        }
-
-      case Failure(exception) =>
-        println(s"An error occurred while processing the data: ${exception.getMessage}")
-    }
-  }
-
-  /**
-   * Handles the "Go Shopping!" feature.
-   * Allows the user to create a shopping basket and calculates its total value.
-   */
-  def goShopping(): Unit = {
+object ShoppingManager {
+  def goShopping(data: Map[String, List[Int]]): Unit = {
     val basket = scala.collection.mutable.Map[String, Float]()
     var continueShopping = true
 
@@ -193,6 +169,7 @@ object Main extends App {
       val input = readLine("Enter item and quantity: ").trim
       if (input.equalsIgnoreCase("done")) {
         continueShopping = false
+
       } else {
         val parts = input.split("\\s+")
         if (parts.length == 2) {
@@ -211,8 +188,7 @@ object Main extends App {
         }
       }
     }
-
-    calculateAndDisplayBasketTotal(basket.toMap)
+    calculateAndDisplayBasketTotal(basket.toMap, data)
   }
 
   /**
@@ -220,35 +196,16 @@ object Main extends App {
    *
    * @param basket The user's shopping basket.
    */
-  def calculateAndDisplayBasketTotal(basket: Map[String, Float]): Unit = {
-    data match {
-      case Success(parsedData) =>
-        val currentPrices = PriceAnalyzer.getCurrentPrices(parsedData)
-        val totalValue = basket.foldLeft(0f) { case (total, (item, quantity)) =>
-          currentPrices.get(item) match {
-            case Some(price) => total + price * quantity
-            case None =>
-              println(s"Warning: Item '$item' not recognized.")
-              total
-          }
-        }
-        println(f"Total value of your basket: ${totalValue}%.2f")
-      case Failure(exception) =>
-        println(s"An error occurred while processing the data: ${exception.getMessage}")
+  private def calculateAndDisplayBasketTotal(basket: Map[String, Float], data: Map[String, List[Int]]): Unit = {
+    val currentPrices = PriceAnalyzer.getCurrentPrices(data)
+    val totalValue = basket.foldLeft(0f) { case (total, (item, quantity)) =>
+      currentPrices.get(item) match {
+        case Some(price) => total + price * quantity
+        case None =>
+          println(s"Warning: Item '$item' not recognized.")
+          total
+      }
     }
-  }
-
-  // Main loop for the application's menu-driven interface.
-  var continueRunning = true
-  while (continueRunning) {
-    displayMainMenu()
-    val choice = readLine()
-
-    choice match {
-      case "1" => performPriceAnalysis()
-      case "2" => goShopping()
-      case "3" => continueRunning = false // Option to exit the application.
-      case _ => println("Invalid choice. Please try again.")
-    }
+    println(f"Total value of your basket: ${totalValue}%.2f")
   }
 }
