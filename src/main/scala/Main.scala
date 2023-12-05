@@ -179,10 +179,63 @@ object Main extends App {
   }
 
   /**
-   * Placeholder for the Go Shopping feature, currently under construction.
+   * Handles the "Go Shopping!" feature.
+   * Allows the user to create a shopping basket and calculates its total value.
    */
   def goShopping(): Unit = {
-    println("Go Shopping feature is under construction.")
+    val basket = scala.collection.mutable.Map[String, Float]()
+    var continueShopping = true
+
+    println("\nGo Shopping!")
+    println("Enter your items in the format 'Item Quantity'. Enter 'done' when finished.")
+
+    while (continueShopping) {
+      val input = readLine("Enter item and quantity: ").trim
+      if (input.equalsIgnoreCase("done")) {
+        continueShopping = false
+      } else {
+        val parts = input.split("\\s+")
+        if (parts.length == 2) {
+          val item = parts(0).toUpperCase
+          val quantity = Try(parts(1).toFloat).getOrElse(0f)
+          if (quantity > 0) {
+            basket.updateWith(item) {
+              case Some(existingQuantity) => Some(existingQuantity + quantity)
+              case None => Some(quantity)
+            }
+          } else {
+            println("Invalid quantity. Please enter a positive number.")
+          }
+        } else {
+          println("Invalid input. Please use the format 'Item Quantity'.")
+        }
+      }
+    }
+
+    calculateAndDisplayBasketTotal(basket.toMap)
+  }
+
+  /**
+   * Calculates and displays the total value of the shopping basket.
+   *
+   * @param basket The user's shopping basket.
+   */
+  def calculateAndDisplayBasketTotal(basket: Map[String, Float]): Unit = {
+    data match {
+      case Success(parsedData) =>
+        val currentPrices = PriceAnalyzer.getCurrentPrices(parsedData)
+        val totalValue = basket.foldLeft(0f) { case (total, (item, quantity)) =>
+          currentPrices.get(item) match {
+            case Some(price) => total + price * quantity
+            case None =>
+              println(s"Warning: Item '$item' not recognized.")
+              total
+          }
+        }
+        println(f"Total value of your basket: ${totalValue}%.2f")
+      case Failure(exception) =>
+        println(s"An error occurred while processing the data: ${exception.getMessage}")
+    }
   }
 
   // Main loop for the application's menu-driven interface.
