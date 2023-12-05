@@ -6,8 +6,8 @@ BasketAnalyzer is a Scala application designed to analyze basic food basket pric
 ## To-Do List
 - [x] Set up the Scala project environment.
 - [x] Read and parse data from `data.txt` into a `Map[String, List[Int]]`.
-- [ ] Implement function to get the current (most recent) price for each food item.
-- [ ] Implement function to find the highest and lowest prices for each food item.
+- [x] Implement function to get the current (most recent) price for each food item.
+- [x] Implement function to find the highest and lowest prices for each food item.
 - [ ] Develop functionality to calculate the median price for each food item.
 - [ ] Create a method to identify the food item with the largest price rise over the last 6 months.
 - [ ] Implement functionality for comparing the average values over 2 years of two selected food items.
