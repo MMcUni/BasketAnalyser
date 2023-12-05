@@ -69,8 +69,8 @@ object Main extends App {
       choice match {
         case "1" => displayCurrentPrices()
         case "2" => displayPriceRange()
-        case "3" => // Placeholder for median price functionality
-        case "4" => // Placeholder for largest price increase functionality
+        case "3" => displayMedianPrices()
+        case "4" => displayLargestPriceIncrease()
         case "5" => // Placeholder for 2-year price comparison functionality
         case "6" => continueAnalysis = false
         case _ => println("Invalid choice. Please try again.")
@@ -103,6 +103,30 @@ object Main extends App {
         minMaxPrices.foreach { case (food, (min, max)) =>
           println(s"$food: Min = $min, Max = $max")
         }
+      case Failure(exception) =>
+        println(s"An error occurred while processing the data: ${exception.getMessage}")
+    }
+  }
+
+  def displayMedianPrices(): Unit = {
+    data match {
+      case Success(parsedData) =>
+        println("\nMedian Prices for Each Food Item:")
+        parsedData.foreach { case (food, prices) =>
+          val medianPrice = PriceAnalyzer.getMedianPrice(prices)
+          println(s"$food: Median Price = $medianPrice")
+        }
+      case Failure(exception) =>
+        println(s"An error occurred while processing the data: ${exception.getMessage}")
+    }
+  }
+
+  def displayLargestPriceIncrease(): Unit = {
+    data match {
+      case Success(parsedData) =>
+        val (food, increase) = PriceAnalyzer.getLargestPriceIncrease(parsedData)
+        println(s"\nLargest Price Increase in Last 6 Months:")
+        println(s"$food with an increase of $increase")
       case Failure(exception) =>
         println(s"An error occurred while processing the data: ${exception.getMessage}")
     }
