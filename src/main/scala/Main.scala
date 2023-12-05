@@ -9,7 +9,7 @@ object Main extends App {
     case Failure(exception) => println(s"Error reading data: ${exception.getMessage}")
   }
 
-  def runApp(data: Map[String, List[Int]]): Unit = {
+  private def runApp(data: Map[String, List[Int]]): Unit = {
     var continueRunning = true
     while (continueRunning) {
       MenuManager.displayMainMenu()
@@ -85,9 +85,10 @@ object PriceAnalysisManager {
     def displayCurrentPrices(data: Map[String, List[Int]]): Unit = {
       val currentPrices = PriceAnalyzer.getCurrentPrices(data)
       println("\nCurrent Food Prices:")
-      currentPrices.foreach { case (food, price) => println(s"$food: $price") }
+      currentPrices.foreach { case (food, price) =>
+        println(s"$food: £${price.toDouble / 100}")
+      }
     }
-
 
     /**
      * Displays the price range (minimum and maximum prices) for each food item to the console.
@@ -206,6 +207,6 @@ object ShoppingManager {
           total
       }
     }
-    println(f"Total value of your basket: ${totalValue}%.2f")
+    println(f"Total value of your basket: £${totalValue / 100}")
   }
 }
