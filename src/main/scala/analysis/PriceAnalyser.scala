@@ -42,4 +42,14 @@ object PriceAnalyzer {
       (food, increase)
     }.maxBy(_._2)
   }
+
+  /**
+   * Calculates the average price of a food item over a 2-year period.
+   *
+   * @param prices List of monthly prices for a food item.
+   * @return The average price.
+   */
+  def getAveragePrice(prices: List[Int]): Double = {
+    if (prices.isEmpty) 0.0 else prices.sum.toDouble / prices.size
+  }
 }

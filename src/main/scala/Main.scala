@@ -71,7 +71,7 @@ object Main extends App {
         case "2" => displayPriceRange()
         case "3" => displayMedianPrices()
         case "4" => displayLargestPriceIncrease()
-        case "5" => // Placeholder for 2-year price comparison functionality
+        case "5" => compareAveragePrices()
         case "6" => continueAnalysis = false
         case _ => println("Invalid choice. Please try again.")
       }
@@ -132,6 +132,52 @@ object Main extends App {
     }
   }
 
+  def displayFoodListWithNumbers(foodItems: List[String]): Unit = {
+    println("\nAvailable Food Items:")
+    foodItems.zipWithIndex.foreach { case (food, index) =>
+      println(s"${index + 1}. $food")
+    }
+  }
+
+  def compareAveragePrices(): Unit = {
+    data match {
+      case Success(parsedData) =>
+        val foodItems = parsedData.keys.toList
+        displayFoodListWithNumbers(foodItems)
+
+        println("\nEnter the number for the first food item:")
+        val firstIndex = scala.io.StdIn.readInt() - 1
+        println("Enter the number for the second food item:")
+        val secondIndex = scala.io.StdIn.readInt() - 1
+
+        val firstFood = foodItems.lift(firstIndex).getOrElse("Unknown")
+        val secondFood = foodItems.lift(secondIndex).getOrElse("Unknown")
+
+        val firstAvg = parsedData.get(firstFood).map(PriceAnalyzer.getAveragePrice).getOrElse(0.0)
+        val secondAvg = parsedData.get(secondFood).map(PriceAnalyzer.getAveragePrice).getOrElse(0.0)
+
+        println(s"\nAverage Price Comparison:")
+        println(s"$firstFood: $firstAvg")
+        println(s"$secondFood: $secondAvg")
+
+        // Adding a summary sentence
+        if (firstAvg != 0.0 && secondAvg != 0.0) {
+          val difference = (firstAvg - secondAvg).abs
+          val summary = if (firstAvg > secondAvg) {
+            s"Over the last 2 years, $firstFood is $difference more expensive than $secondFood."
+          } else if (secondAvg > firstAvg) {
+            s"Over the last 2 years, $secondFood is $difference more expensive than $firstFood."
+          } else {
+            s"Over the last 2 years, $firstFood and $secondFood have the same average price."
+          }
+          println(summary)
+        }
+
+      case Failure(exception) =>
+        println(s"An error occurred while processing the data: ${exception.getMessage}")
+    }
+  }
+
   /**
    * Placeholder for the Go Shopping feature, currently under construction.
    */
@@ -147,7 +193,8 @@ object Main extends App {
 
     choice match {
       case "1" => performPriceAnalysis()
-      case "2" => continueRunning = false  // Exit the application.
+      case "2" => goShopping()
+      case "3" => continueRunning = false // Option to exit the application.
       case _ => println("Invalid choice. Please try again.")
     }
   }
