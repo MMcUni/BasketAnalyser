@@ -161,21 +161,31 @@ object PriceAnalysisManager {
 object ShoppingManager {
   def goShopping(data: Map[String, List[Int]]): Unit = {
     val basket = scala.collection.mutable.Map[String, Float]()
-    var continueShopping = true
+    val currentPrices = PriceAnalyzer.getCurrentPrices(data)
 
     println("\nGo Shopping!")
-    println("Enter your items in the format 'Item Quantity'. Enter 'done' when finished.")
+    displayFoodListWithPrices(data.keys.toList, currentPrices)
 
-    while (continueShopping) {
-      val input = readLine("Enter item and quantity: ").trim
-      if (input.equalsIgnoreCase("done")) {
-        continueShopping = false
+    var shoppingOption = "continue"
+    while (shoppingOption != "back" && shoppingOption != "exit") {
+      shoppingOption = handleShopping(basket, data, currentPrices)
+    }
+  }
 
-      } else {
-        val parts = input.split("\\s+")
-        if (parts.length == 2) {
-          val item = parts(0).toUpperCase
-          val quantity = Try(parts(1).toFloat).getOrElse(0f)
+  private def handleShopping(basket: scala.collection.mutable.Map[String, Float], data: Map[String, List[Int]], currentPrices: Map[String, Int]): String = {
+    println("\nEnter the number for the food item (or 'done' to finish):")
+    val itemInput = readLine().trim
+
+    if (itemInput.equalsIgnoreCase("done")) {
+      calculateAndDisplayBasketTotal(basket.toMap, data)
+      basketOptions(basket, data)
+    } else {
+      val itemNumber = Try(itemInput.toInt - 1).getOrElse(-1)
+      data.keys.toList.lift(itemNumber) match {
+        case Some(item) =>
+          println(s"Enter the quantity for $item:")
+          val quantityInput = readLine().trim
+          val quantity = Try(quantityInput.toFloat).getOrElse(0f)
           if (quantity > 0) {
             basket.updateWith(item) {
               case Some(existingQuantity) => Some(existingQuantity + quantity)
@@ -184,19 +194,43 @@ object ShoppingManager {
           } else {
             println("Invalid quantity. Please enter a positive number.")
           }
-        } else {
-          println("Invalid input. Please use the format 'Item Quantity'.")
-        }
+        case None => println("Invalid item number. Please enter a valid number.")
       }
+      "continue"
     }
-    calculateAndDisplayBasketTotal(basket.toMap, data)
   }
 
-  /**
-   * Calculates and displays the total value of the shopping basket.
-   *
-   * @param basket The user's shopping basket.
-   */
+  private def basketOptions(basket: scala.collection.mutable.Map[String, Float], data: Map[String, List[Int]]): String = {
+    println("\nBasket Options:")
+    println("1. Pay Now")
+    println("2. Edit Basket")
+    println("3. Clear Basket")
+    println("4. Back")
+    println("5. Exit")
+    print("Enter your choice: ")
+
+    readLine().trim match {
+      case "1" => "pay" // Implement the Pay Now functionality
+      case "2" => "edit" // Implement the Edit Basket functionality
+      case "3" =>
+        basket.clear()
+        "clear"
+      case "4" => "back"
+      case "5" => "exit"
+      case _ =>
+        println("Invalid choice. Please try again.")
+        "invalid"
+    }
+  }
+
+  private def displayFoodListWithPrices(foodItems: List[String], prices: Map[String, Int]): Unit = {
+    println("\nAvailable Food Items with Current Prices:")
+    foodItems.zipWithIndex.foreach { case (food, index) =>
+      val price = prices.getOrElse(food, 0) / 100.0
+      println(s"${index + 1}. $food - £$price")
+    }
+  }
+
   private def calculateAndDisplayBasketTotal(basket: Map[String, Float], data: Map[String, List[Int]]): Unit = {
     val currentPrices = PriceAnalyzer.getCurrentPrices(data)
     val totalValue = basket.foldLeft(0f) { case (total, (item, quantity)) =>
