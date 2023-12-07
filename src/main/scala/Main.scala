@@ -191,6 +191,7 @@ object ShoppingManager {
               case Some(existingQuantity) => Some(existingQuantity + quantity)
               case None => Some(quantity)
             }
+            calculateAndDisplayBasketTotal(basket.toMap, data) // Display running total
           } else {
             println("Invalid quantity. Please enter a positive number.")
           }
@@ -210,10 +211,16 @@ object ShoppingManager {
     print("Enter your choice: ")
 
     readLine().trim match {
-      case "1" => "pay" // Implement the Pay Now functionality
+      case "1" =>
+        println("\nYou're our 1 billionth user and done need to pay! Your order is on the way!")
+        println("1. Main Menu")
+        println("2. Exit")
+        val postPaymentChoice = readLine().trim
+        if (postPaymentChoice == "2") "exit" else "back"
       case "2" => "edit" // Implement the Edit Basket functionality
       case "3" =>
         basket.clear()
+        println("\nBasket has been cleared.")
         "clear"
       case "4" => "back"
       case "5" => "exit"
