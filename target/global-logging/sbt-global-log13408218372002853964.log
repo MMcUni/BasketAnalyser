@@ -1,0 +1,71 @@
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(test, Some(d1e6f478-ea23-4aae-9590-38c7d878a1ca), Some(CommandSource(console0)))[0m
+[0m[[0m[0mdebug[0m] [0m[0mEvaluating tasks: Test / test[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning task... Cancel: Signal, check cycles: false, forcegc: true[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 1 Scala source to C:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\target\scala-2.13\classes ...[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:1:12: object scalatest is not a member of package org[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.scalatest.flatspec.AnyFlatSpec[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:2:12: object scalatest is not a member of package org[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.scalatest.matchers.should.Matchers[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:5:31: not found: type AnyFlatSpec[0m
+[0m[[0m[31merror[0m] [0m[0mclass DataManagerTest extends AnyFlatSpec with Matchers {[0m
+[0m[[0m[31merror[0m] [0m[0m                              ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:5:48: not found: type Matchers[0m
+[0m[[0m[31merror[0m] [0m[0mclass DataManagerTest extends AnyFlatSpec with Matchers {[0m
+[0m[[0m[31merror[0m] [0m[0m                                               ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:7:14: value should is not a member of String[0m
+[0m[[0m[31merror[0m] [0m[0m  "readData" should "return a Success containing a Map for valid data" in {[0m
+[0m[[0m[31merror[0m] [0m[0m             ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:9:12: value shouldBe is not a member of scala.util.Try[Map[String,List[Int]]][0m
+[0m[[0m[31merror[0m] [0m[0m    result shouldBe a[Success[_]][0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:9:21: not found: value a[0m
+[0m[[0m[31merror[0m] [0m[0m    result shouldBe a[Success[_]][0m
+[0m[[0m[31merror[0m] [0m[0m                    ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:10:16: value shouldBe is not a member of Map[String,List[Int]][0m
+[0m[[0m[31merror[0m] [0m[0m    result.get shouldBe a[Map[_, _]][0m
+[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:10:25: not found: value a[0m
+[0m[[0m[31merror[0m] [0m[0m    result.get shouldBe a[Map[_, _]][0m
+[0m[[0m[31merror[0m] [0m[0m                        ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:13:3: not found: value it[0m
+[0m[[0m[31merror[0m] [0m[0m  it should "return a Failure for invalid data" in {[0m
+[0m[[0m[31merror[0m] [0m[0m  ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:16:40: value filename in object DataManager cannot be accessed as a member of object DataManager from class DataManagerTest[0m
+[0m[[0m[31merror[0m] [0m[0m    val originalFilename = DataManager.filename[0m
+[0m[[0m[31merror[0m] [0m[0m                                       ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:17:17: value filename in object DataManager cannot be accessed as a member of object DataManager from class DataManagerTest[0m
+[0m[[0m[31merror[0m] [0m[0m    DataManager.filename = "invalid/path/data.txt"[0m
+[0m[[0m[31merror[0m] [0m[0m                ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:19:12: value shouldBe is not a member of scala.util.Try[Map[String,List[Int]]][0m
+[0m[[0m[31merror[0m] [0m[0m    result shouldBe a[Failure[_]][0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:19:21: not found: value a[0m
+[0m[[0m[31merror[0m] [0m[0m    result shouldBe a[Failure[_]][0m
+[0m[[0m[31merror[0m] [0m[0m                    ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:20:17: value filename in object DataManager cannot be accessed as a member of object DataManager from class DataManagerTest[0m
+[0m[[0m[31merror[0m] [0m[0m    DataManager.filename = originalFilename // Reset the filename after test[0m
+[0m[[0m[31merror[0m] [0m[0m                ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:23:15: value should is not a member of String[0m
+[0m[[0m[31merror[0m] [0m[0m  "parseLine" should "correctly parse a valid line into a tuple" in {[0m
+[0m[[0m[31merror[0m] [0m[0m              ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:25:30: method parseLine in object DataManager cannot be accessed as a member of object DataManager from class DataManagerTest[0m
+[0m[[0m[31merror[0m] [0m[0m    val result = DataManager.parseLine(line)[0m
+[0m[[0m[31merror[0m] [0m[0m                             ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:30:3: not found: value it[0m
+[0m[[0m[31merror[0m] [0m[0m  it should "throw an exception for an invalid line" in {[0m
+[0m[[0m[31merror[0m] [0m[0m  ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:32:5: not found: value an[0m
+[0m[[0m[31merror[0m] [0m[0m    an[IllegalArgumentException] should be thrownBy DataManager.parseLine(line)[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:32:41: not found: value be[0m
+[0m[[0m[31merror[0m] [0m[0m    an[IllegalArgumentException] should be thrownBy DataManager.parseLine(line)[0m
+[0m[[0m[31merror[0m] [0m[0m                                        ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\main\scala\test\DataManagerTest.scala:32:65: method parseLine in object DataManager cannot be accessed as a member of object DataManager from class DataManagerTest[0m
+[0m[[0m[31merror[0m] [0m[0m    an[IllegalArgumentException] should be thrownBy DataManager.parseLine(line)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                ^[0m
+[0m[[0m[31merror[0m] [0m[0m21 errors found[0m
+[0m[[0m[31merror[0m] [0m[0m(Compile / [31mcompileIncremental[0m) Compilation failed[0m
+[0m[[0m[31merror[0m] [0m[0mTotal time: 1 s, completed 8 Dec 2023, 13:48:19[0m
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(shell, None, None)[0m

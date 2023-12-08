@@ -1,10 +1,10 @@
-import analysis.PriceAnalyzer
+import analysis.PriceAnalyser
 import scala.io.Source
 import scala.util.{Failure, Success, Try, Using}
 import scala.io.StdIn.readLine
 
 object Main extends App {
-  DataManager.readData match {
+  DataManager.readData() match { // No filename argument is needed here
     case Success(data) => runApp(data)
     case Failure(exception) => println(s"Error reading data: ${exception.getMessage}")
   }
@@ -24,6 +24,7 @@ object Main extends App {
     }
   }
 }
+
 
 object MenuManager {
   def displayMainMenu(): Unit = {
@@ -47,17 +48,19 @@ object MenuManager {
 }
 
 object DataManager {
-  private val filename = "src/main/data.txt"
+  var filename = "src/main/data.txt" // Made public for testing
 
-  def readData: Try[Map[String, List[Int]]] = {
+  def readData(filename: String = DataManager.filename): Try[Map[String, List[Int]]] = {
     Using(Source.fromFile(filename)) { source =>
       source.getLines().map(parseLine).toMap
     }
   }
 
-  private def parseLine(line: String): (String, List[Int]) = {
-    val parts = line.split(", ")
-    (parts.head, parts.tail.toList.map(_.toInt))
+  def parseLine(line: String): (String, List[Int]) = {
+    val parts = line.split(", ").toList
+    if (parts.size < 2 || parts.tail.exists(!_.forall(_.isDigit)))
+      throw new IllegalArgumentException(s"Invalid line format: '$line'")
+    (parts.head, parts.tail.map(_.toInt))
   }
 }
 
@@ -83,7 +86,7 @@ object PriceAnalysisManager {
      * Displays the current food prices to the console.
      */
     def displayCurrentPrices(data: Map[String, List[Int]]): Unit = {
-      val currentPrices = PriceAnalyzer.getCurrentPrices(data)
+      val currentPrices = PriceAnalyser.getCurrentPrices(data)
       println("\nCurrent Food Prices:")
       currentPrices.foreach { case (food, price) =>
         println(s"$food: £${price.toDouble / 100}")
@@ -94,7 +97,7 @@ object PriceAnalysisManager {
      * Displays the price range (minimum and maximum prices) for each food item to the console.
      */
     def displayPriceRange(data: Map[String, List[Int]]): Unit = {
-      val minMaxPrices = PriceAnalyzer.getMinMaxPrices(data)
+      val minMaxPrices = PriceAnalyser.getMinMaxPrices(data)
       println("\nPrice Range (Min and Max) for Each Food Item:")
       minMaxPrices.foreach { case (food, (min, max)) => println(s"$food: Min = $min, Max = $max") }
     }
@@ -103,14 +106,14 @@ object PriceAnalysisManager {
     def displayMedianPrices(data: Map[String, List[Int]]): Unit = {
       println("\nMedian Prices for Each Food Item:")
       data.foreach { case (food, prices) =>
-        val medianPrice = PriceAnalyzer.getMedianPrice(prices)
+        val medianPrice = PriceAnalyser.getMedianPrice(prices)
         println(s"$food: Median Price = $medianPrice")
       }
     }
 
 
     def displayLargestPriceIncrease(data: Map[String, List[Int]]): Unit = {
-      val (food, increase) = PriceAnalyzer.getLargestPriceIncrease(data)
+      val (food, increase) = PriceAnalyser.getLargestPriceIncrease(data)
       println(s"\nLargest Price Increase in Last 6 Months:")
       println(s"$food with an increase of $increase")
     }
@@ -135,8 +138,8 @@ object PriceAnalysisManager {
       val firstFood = foodItems.lift(firstIndex).getOrElse("Unknown")
       val secondFood = foodItems.lift(secondIndex).getOrElse("Unknown")
 
-      val firstAvg = data.get(firstFood).map(PriceAnalyzer.getAveragePrice).getOrElse(0.0)
-      val secondAvg = data.get(secondFood).map(PriceAnalyzer.getAveragePrice).getOrElse(0.0)
+      val firstAvg = data.get(firstFood).map(PriceAnalyser.getAveragePrice).getOrElse(0.0)
+      val secondAvg = data.get(secondFood).map(PriceAnalyser.getAveragePrice).getOrElse(0.0)
 
       println(s"\nAverage Price Comparison:")
       println(s"$firstFood: $firstAvg")
@@ -161,7 +164,7 @@ object PriceAnalysisManager {
 object ShoppingManager {
   def goShopping(data: Map[String, List[Int]]): Unit = {
     val basket = scala.collection.mutable.Map[String, Float]()
-    val currentPrices = PriceAnalyzer.getCurrentPrices(data)
+    val currentPrices = PriceAnalyser.getCurrentPrices(data)
 
     println("\nGo Shopping!")
     displayFoodListWithPrices(data.keys.toList, currentPrices)
@@ -239,7 +242,7 @@ object ShoppingManager {
   }
 
   private def calculateAndDisplayBasketTotal(basket: Map[String, Float], data: Map[String, List[Int]]): Unit = {
-    val currentPrices = PriceAnalyzer.getCurrentPrices(data)
+    val currentPrices = PriceAnalyser.getCurrentPrices(data)
     val totalValue = basket.foldLeft(0f) { case (total, (item, quantity)) =>
       currentPrices.get(item) match {
         case Some(price) => total + price * quantity

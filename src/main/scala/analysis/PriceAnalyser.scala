@@ -1,6 +1,6 @@
 package analysis
 
-object PriceAnalyzer {
+object PriceAnalyser {
   def getCurrentPrices(pricesData: Map[String, List[Int]]): Map[String, Int] = {
     pricesData.map { case (food, prices) => (food, prices.last) }
   }

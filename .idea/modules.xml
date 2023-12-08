@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BasketAnalyzer.iml" filepath="$PROJECT_DIR$/.idea/modules/BasketAnalyzer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BasketAnalyzer-build.iml" filepath="$PROJECT_DIR$/.idea/modules/BasketAnalyzer-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BasketAnalyser.iml" filepath="$PROJECT_DIR$/.idea/modules/BasketAnalyser.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BasketAnalyser-build.iml" filepath="$PROJECT_DIR$/.idea/modules/BasketAnalyser-build.iml" />
     </modules>
   </component>
 </project>
