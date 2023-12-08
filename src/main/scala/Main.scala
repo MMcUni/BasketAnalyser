@@ -99,7 +99,7 @@ object PriceAnalysisManager {
     def displayPriceRange(data: Map[String, List[Int]]): Unit = {
       val minMaxPrices = PriceAnalyser.getMinMaxPrices(data)
       println("\nPrice Range (Min and Max) for Each Food Item:")
-      minMaxPrices.foreach { case (food, (min, max)) => println(s"$food: Min = $min, Max = $max") }
+      minMaxPrices.foreach { case (food, (min, max)) => println(s"$food: Min = £${min.toDouble / 100}, Max = £${max.toDouble / 100}") }
     }
 
 
@@ -107,7 +107,7 @@ object PriceAnalysisManager {
       println("\nMedian Prices for Each Food Item:")
       data.foreach { case (food, prices) =>
         val medianPrice = PriceAnalyser.getMedianPrice(prices)
-        println(s"$food: Median Price = $medianPrice")
+        println(s"$food: Median Price = £${medianPrice.toDouble / 100}")
       }
     }
 
@@ -115,7 +115,7 @@ object PriceAnalysisManager {
     def displayLargestPriceIncrease(data: Map[String, List[Int]]): Unit = {
       val (food, increase) = PriceAnalyser.getLargestPriceIncrease(data)
       println(s"\nLargest Price Increase in Last 6 Months:")
-      println(s"$food with an increase of $increase")
+      println(s"$food with an increase of £${increase.toDouble / 100}")
     }
 
 
@@ -140,10 +140,9 @@ object PriceAnalysisManager {
 
       val firstAvg = data.get(firstFood).map(PriceAnalyser.getAveragePrice).getOrElse(0.0)
       val secondAvg = data.get(secondFood).map(PriceAnalyser.getAveragePrice).getOrElse(0.0)
-
       println(s"\nAverage Price Comparison:")
-      println(s"$firstFood: $firstAvg")
-      println(s"$secondFood: $secondAvg")
+      println(s"$firstFood: £${firstAvg / 100}")
+      println(s"$secondFood: £${secondAvg / 100}")
 
       // Adding a summary sentence
       if (firstAvg != 0.0 && secondAvg != 0.0) {
@@ -215,7 +214,7 @@ object ShoppingManager {
 
     readLine().trim match {
       case "1" =>
-        println("\nYou're our 1 billionth user and done need to pay! Your order is on the way!")
+        println("\nYou're our 1 billionth user and don't need to pay! Your order is on the way!")
         println("1. Main Menu")
         println("2. Exit")
         val postPaymentChoice = readLine().trim
