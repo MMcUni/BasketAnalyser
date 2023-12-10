@@ -48,21 +48,27 @@ object MenuManager {
 }
 
 object DataManager {
-  var filename = "src/main/data.txt" // Made public for testing
+  var filename = "src/main/data.txt"
 
   def readData(filename: String = DataManager.filename): Try[Map[String, List[Int]]] = {
     Using(Source.fromFile(filename)) { source =>
-      source.getLines().map(parseLine).toMap
+      source.getLines().map(parseLine).collect {
+        case Some(parsedLine) => parsedLine
+      }.toMap
     }
   }
 
-  def parseLine(line: String): (String, List[Int]) = {
+  def parseLine(line: String): Option[(String, List[Int])] = {
     val parts = line.split(", ").toList
-    if (parts.size < 2 || parts.tail.exists(!_.forall(_.isDigit)))
-      throw new IllegalArgumentException(s"Invalid line format: '$line'")
-    (parts.head, parts.tail.map(_.toInt))
+    if (parts.size < 2 || parts.tail.exists(!_.forall(_.isDigit))) {
+      println(s"Warning: Skipping invalid line format: '$line'")
+      None
+    } else {
+      Some(parts.head, parts.tail.map(_.toInt))
+    }
   }
 }
+
 
 object PriceAnalysisManager {
   def performPriceAnalysis(data: Map[String, List[Int]]): Unit = {
@@ -104,12 +110,21 @@ object PriceAnalysisManager {
 
 
     def displayMedianPrices(data: Map[String, List[Int]]): Unit = {
-      println("\nMedian Prices for Each Food Item:")
-      data.foreach { case (food, prices) =>
-        val medianPrice = PriceAnalyser.getMedianPrice(prices)
-        println(s"$food: Median Price = £${medianPrice.toDouble / 100}")
+      if (data.isEmpty) {
+        println("No data available to display median prices.")
+      } else {
+        println("\nMedian Prices for Each Food Item:")
+        data.foreach { case (food, prices) =>
+          if (prices.isEmpty) {
+            println(s"Warning: No price data available for $food.")
+          } else {
+            val medianPrice = PriceAnalyser.getMedianPrice(prices)
+            println(s"$food: Median Price = £${medianPrice.toDouble / 100}")
+          }
+        }
       }
     }
+
 
 
     def displayLargestPriceIncrease(data: Map[String, List[Int]]): Unit = {
@@ -130,35 +145,45 @@ object PriceAnalysisManager {
       val foodItems = data.keys.toList
       displayFoodListWithNumbers(foodItems)
 
-      println("\nEnter the number for the first food item:")
-      val firstIndex = scala.io.StdIn.readInt() - 1
-      println("Enter the number for the second food item:")
-      val secondIndex = scala.io.StdIn.readInt() - 1
+      try {
+        println("\nEnter the number for the first food item:")
+        val firstIndex = scala.io.StdIn.readInt() - 1
+        println("Enter the number for the second food item:")
+        val secondIndex = scala.io.StdIn.readInt() - 1
 
-      val firstFood = foodItems.lift(firstIndex).getOrElse("Unknown")
-      val secondFood = foodItems.lift(secondIndex).getOrElse("Unknown")
+        val firstFood = foodItems.lift(firstIndex).getOrElse("Unknown")
+        val secondFood = foodItems.lift(secondIndex).getOrElse("Unknown")
 
-      val firstAvg = data.get(firstFood).map(PriceAnalyser.getAveragePrice).getOrElse(0.0)
-      val secondAvg = data.get(secondFood).map(PriceAnalyser.getAveragePrice).getOrElse(0.0)
-      println(s"\nAverage Price Comparison:")
-      println(s"$firstFood: £${firstAvg / 100}")
-      println(s"$secondFood: £${secondAvg / 100}")
-
-      // Adding a summary sentence
-      if (firstAvg != 0.0 && secondAvg != 0.0) {
-        val difference = (firstAvg - secondAvg).abs
-        val summary = if (firstAvg > secondAvg) {
-          s"Over the last 2 years, $firstFood is $difference more expensive than $secondFood."
-        } else if (secondAvg > firstAvg) {
-          s"Over the last 2 years, $secondFood is $difference more expensive than $firstFood."
+        if (firstFood == "Unknown" || secondFood == "Unknown") {
+          println("Invalid selection. Please enter valid food item numbers.")
         } else {
-          s"Over the last 2 years, $firstFood and $secondFood have the same average price."
+          val firstAvg = data.get(firstFood).map(PriceAnalyser.getAveragePrice).getOrElse(0.0)
+          val secondAvg = data.get(secondFood).map(PriceAnalyser.getAveragePrice).getOrElse(0.0)
+
+          println(s"\nAverage Price Comparison:")
+          println(f"$firstFood: £${firstAvg / 100}%.2f")
+          println(f"$secondFood: £${secondAvg / 100}%.2f")
+
+          // Adding a summary sentence with two decimal places
+          if (firstAvg != 0.0 && secondAvg != 0.0) {
+            val difference = (firstAvg - secondAvg).abs
+            val summary = if (firstAvg > secondAvg) {
+              f"Over the last 2 years, $firstFood is £${difference / 100}%.2f more expensive than $secondFood."
+            } else if (secondAvg > firstAvg) {
+              f"Over the last 2 years, $secondFood is £${difference / 100}%.2f more expensive than $firstFood."
+            } else {
+              s"Over the last 2 years, $firstFood and $secondFood have the same average price."
+            }
+            println(summary)
+          }
         }
-        println(summary)
+      } catch {
+        case _: NumberFormatException => println("Invalid input. Please enter a number.")
       }
     }
   }
 }
+
 
 object ShoppingManager {
   def goShopping(data: Map[String, List[Int]]): Unit = {
@@ -178,28 +203,32 @@ object ShoppingManager {
     println("\nEnter the number for the food item (or 'done' to finish):")
     val itemInput = readLine().trim
 
-    if (itemInput.equalsIgnoreCase("done")) {
-      calculateAndDisplayBasketTotal(basket.toMap, data)
-      basketOptions(basket, data)
-    } else {
-      val itemNumber = Try(itemInput.toInt - 1).getOrElse(-1)
-      data.keys.toList.lift(itemNumber) match {
-        case Some(item) =>
-          println(s"Enter the quantity for $item:")
-          val quantityInput = readLine().trim
-          val quantity = Try(quantityInput.toFloat).getOrElse(0f)
-          if (quantity > 0) {
-            basket.updateWith(item) {
-              case Some(existingQuantity) => Some(existingQuantity + quantity)
-              case None => Some(quantity)
+    itemInput.toLowerCase match {
+      case "done" =>
+        calculateAndDisplayBasketTotal(basket.toMap, data)
+        basketOptions(basket, data)
+      case _ =>
+        Try(itemInput.toInt - 1) match {
+          case Success(itemNumber) if data.keys.toList.isDefinedAt(itemNumber) =>
+            val item = data.keys.toList(itemNumber)
+            println(s"Enter the quantity for $item:")
+            val quantityInput = readLine().trim
+            Try(quantityInput.toFloat) match {
+              case Success(quantity) if quantity > 0 =>
+                basket.updateWith(item) {
+                  case Some(existingQuantity) => Some(existingQuantity + quantity)
+                  case None => Some(quantity)
+                }
+                calculateAndDisplayBasketTotal(basket.toMap, data) // Display running total
+                "continue"
+              case _ =>
+                println("Invalid quantity. Please enter a positive number.")
+                "continue"
             }
-            calculateAndDisplayBasketTotal(basket.toMap, data) // Display running total
-          } else {
-            println("Invalid quantity. Please enter a positive number.")
-          }
-        case None => println("Invalid item number. Please enter a valid number.")
-      }
-      "continue"
+          case _ =>
+            println("Invalid item number. Please enter a valid number.")
+            "continue"
+        }
     }
   }
 
@@ -219,7 +248,7 @@ object ShoppingManager {
         println("2. Exit")
         val postPaymentChoice = readLine().trim
         if (postPaymentChoice == "2") "exit" else "back"
-      case "2" => "edit" // Implement the Edit Basket functionality
+      case "2" => "edit"
       case "3" =>
         basket.clear()
         println("\nBasket has been cleared.")
