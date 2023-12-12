@@ -1,13 +1,27 @@
 package analysis
 
 object PriceAnalyser {
+
+  /**
+   * Retrieves the most recent price for each food item.
+   *
+   * @param pricesData A map of food items to their historical prices.
+   * @return A map of food items to their most recent price.
+   */
   def getCurrentPrices(pricesData: Map[String, List[Int]]): Map[String, Int] = {
     pricesData.map { case (food, prices) => (food, prices.last) }
   }
 
+  /**
+   * Determines the minimum and maximum prices for each food item.
+   *
+   * @param pricesData A map of food items to their historical prices.
+   * @return A map of food items to a tuple containing their minimum and maximum prices.
+   */
   def getMinMaxPrices(pricesData: Map[String, List[Int]]): Map[String, (Int, Int)] = {
     pricesData.collect {
       case (food, prices) if prices.nonEmpty =>
+        // Using foldLeft to find min and max prices in one pass through the list
         val (min, max) = prices.foldLeft((prices.head, prices.head)) { case ((min, max), p) =>
           (math.min(min, p), math.max(max, p))
         }
@@ -15,12 +29,20 @@ object PriceAnalyser {
     }
   }
 
+  /**
+   * Calculates the median price of a list of prices.
+   *
+   * @param prices A list of prices for a particular food item.
+   * @return The median price.
+   * @throws IllegalArgumentException if the prices list is empty.
+   */
   def getMedianPrice(prices: List[Int]): Int = {
     if (prices.isEmpty) {
       throw new IllegalArgumentException("Price list cannot be empty")
     } else {
       val sortedPrices = prices.sorted
       val middle = sortedPrices.length / 2
+      // Handle even and odd number of prices
       if (sortedPrices.length % 2 == 0) {
         (sortedPrices(middle - 1) + sortedPrices(middle)) / 2
       } else {
@@ -53,7 +75,7 @@ object PriceAnalyser {
    * Calculates the average price of a food item over a 2-year period.
    *
    * @param prices List of monthly prices for a food item.
-   * @return The average price.
+   * @return The average price, or 0.0 if the list is empty.
    */
   def getAveragePrice(prices: List[Int]): Double = {
     if (prices.isEmpty) 0.0 else prices.sum.toDouble / prices.size

@@ -3,29 +3,49 @@ import scala.io.Source
 import scala.util.{Failure, Success, Try, Using}
 import scala.io.StdIn.readLine
 
+/**
+ * The main application object.
+ *
+ * This object is the entry point of the program. It reads data using DataManager and starts the application loop.
+ */
 object Main extends App {
-  DataManager.readData() match { // No filename argument is needed here
-    case Success(data) => runApp(data)
-    case Failure(exception) => println(s"Error reading data: ${exception.getMessage}")
+
+  // Attempt to read data and handle success or failure
+  DataManager.readData() match {
+    case Success(data) => runApp(data) // On successful data read, run the application
+    case Failure(exception) => println(s"Error reading data: ${exception.getMessage}") // Handle data reading errors
   }
 
+  /**
+   * Runs the main application loop.
+   *
+   * @param data The data loaded from the data source.
+   */
   private def runApp(data: Map[String, List[Int]]): Unit = {
     var continueRunning = true
     while (continueRunning) {
       MenuManager.displayMainMenu()
       val choice = readLine()
 
+      // Handle user choice
       choice match {
         case "1" => PriceAnalysisManager.performPriceAnalysis(data)
         case "2" => ShoppingManager.goShopping(data)
-        case "3" => continueRunning = false
+        case "3" => continueRunning = false // Exit the loop to terminate the application
         case _ => println("Invalid choice. Please try again.")
       }
     }
   }
 }
 
+/**
+ * Manages the display of various menus in the application.
+ */
 object MenuManager {
+
+  /**
+   * Displays the main menu of the application.
+   */
   def displayMainMenu(): Unit = {
     println("\nMain Menu:")
     println("1. Price Analysis")
@@ -34,6 +54,9 @@ object MenuManager {
     print("Enter your choice: ")
   }
 
+  /**
+   * Displays the menu for price analysis.
+   */
   def displayPriceAnalysisMenu(): Unit = {
     println("\nPrice Analysis Menu:")
     println("1. Current Food Prices")
@@ -46,43 +69,66 @@ object MenuManager {
   }
 }
 
+/**
+ * DataManager is responsible for reading and parsing data from a file.
+ */
 object DataManager {
-  var filename = "src/main/data.txt"
+  var filename = "src/main/data.txt"  // Default filename for the data source
 
+  /**
+   * Reads data from a file and parses it into a Map.
+   *
+   * @param filename The name of the file to read from.
+   * @return A Try containing either the parsed data or an exception.
+   */
   def readData(filename: String = DataManager.filename): Try[Map[String, List[Int]]] = {
     Using(Source.fromFile(filename)) { source =>
       source.getLines().map(parseLine).collect {
-        case Some(parsedLine) => parsedLine
+        case Some(parsedLine) => parsedLine  // Collect only successfully parsed lines
       }.toMap
     }
   }
 
+  /**
+   * Parses a line from the file into a key-value pair.
+   *
+   * @param line A line from the file.
+   * @return An Option containing the parsed line, or None if parsing fails.
+   */
   def parseLine(line: String): Option[(String, List[Int])] = {
     val parts = line.split(", ").toList
     if (parts.size < 2 || parts.tail.exists(!_.forall(_.isDigit))) {
       println(s"Warning: Skipping invalid line format: '$line'")
-      None
+      None  // Return None if line format is invalid
     } else {
       Some(parts.head, parts.tail.map(_.toInt))
     }
   }
 }
 
-
+/**
+ * PriceAnalysisManager handles the execution of different price analyses.
+ */
 object PriceAnalysisManager {
+  /**
+   * Coordinates and performs the chosen price analysis.
+   *
+   * @param data The data to analyze.
+   */
   def performPriceAnalysis(data: Map[String, List[Int]]): Unit = {
     var continueAnalysis = true
     while (continueAnalysis) {
       MenuManager.displayPriceAnalysisMenu()
       val choice = readLine()
 
+      // Handle user's choice for different analyses
       choice match {
         case "1" => displayCurrentPrices(data)
         case "2" => displayPriceRange(data)
         case "3" => displayMedianPrices(data)
         case "4" => displayLargestPriceIncrease(data)
         case "5" => compareAveragePrices(data)
-        case "6" => continueAnalysis = false
+        case "6" => continueAnalysis = false // Exit the analysis loop
         case _ => println("Invalid choice. Please try again.")
       }
     }
@@ -107,7 +153,11 @@ object PriceAnalysisManager {
       minMaxPrices.foreach { case (food, (min, max)) => println(s"$food: Min = £${min.toDouble / 100}, Max = £${max.toDouble / 100}") }
     }
 
-
+    /**
+     * Displays median prices for each food item in the data.
+     *
+     * @param data The map of food items to their list of prices.
+     */
     def displayMedianPrices(data: Map[String, List[Int]]): Unit = {
       if (data.isEmpty) {
         println("No data available to display median prices.")
@@ -124,12 +174,22 @@ object PriceAnalysisManager {
       }
     }
 
+    /**
+     * Displays the food item with the largest price increase over the last 6 months.
+     *
+     * @param data The map of food items to their list of prices.
+     */
     def displayLargestPriceIncrease(data: Map[String, List[Int]]): Unit = {
       val (food, increase) = PriceAnalyser.getLargestPriceIncrease(data)
       println(s"\nLargest Price Increase in Last 6 Months:")
       println(s"$food with an increase of £${increase.toDouble / 100}")
     }
 
+    /**
+     * Displays a list of food items with their corresponding index numbers.
+     *
+     * @param foodItems The list of food item names.
+     */
     def displayFoodListWithNumbers(foodItems: List[String]): Unit = {
       println("\nAvailable Food Items:")
       foodItems.zipWithIndex.foreach { case (food, index) =>
@@ -137,6 +197,11 @@ object PriceAnalysisManager {
       }
     }
 
+    /**
+     * Allows the user to compare the average prices of two selected food items over a 2-year period.
+     *
+     * @param data The map of food items to their list of prices.
+     */
     def compareAveragePrices(data: Map[String, List[Int]]): Unit = {
       val foodItems = data.keys.toList
       displayFoodListWithNumbers(foodItems)
@@ -160,7 +225,7 @@ object PriceAnalysisManager {
           println(f"$firstFood: £${firstAvg / 100}%.2f")
           println(f"$secondFood: £${secondAvg / 100}%.2f")
 
-          // Adding a summary sentence with two decimal places
+          // Summary of the comparison
           if (firstAvg != 0.0 && secondAvg != 0.0) {
             val difference = (firstAvg - secondAvg).abs
             val summary = if (firstAvg > secondAvg) {
@@ -180,7 +245,16 @@ object PriceAnalysisManager {
   }
 }
 
+/**
+ * The ShoppingManager object is responsible for handling the shopping functionalities.
+ */
 object ShoppingManager {
+
+  /**
+   * Initiates the shopping process, allowing users to select food items and quantities.
+   *
+   * @param data The map of food items to their list of prices.
+   */
   def goShopping(data: Map[String, List[Int]]): Unit = {
     val basket = scala.collection.mutable.Map[String, Float]()
     val currentPrices = PriceAnalyser.getCurrentPrices(data)
@@ -194,6 +268,14 @@ object ShoppingManager {
     }
   }
 
+  /**
+   * Handles the user's shopping choices, including item selection and quantity.
+   *
+   * @param basket        The current shopping basket.
+   * @param data          The map of food items to their list of prices.
+   * @param currentPrices The map of food items to their current prices.
+   * @return A string indicating the next action (continue, back, exit).
+   */
   private def handleShopping(basket: scala.collection.mutable.Map[String, Float], data: Map[String, List[Int]], currentPrices: Map[String, Int]): String = {
     println("\nEnter the number for the food item (or 'done' to finish):")
     val itemInput = readLine().trim
@@ -210,11 +292,13 @@ object ShoppingManager {
             val quantityInput = readLine().trim
             Try(quantityInput.toFloat) match {
               case Success(quantity) if quantity > 0 =>
+                // Update the basket with the selected item and quantity
                 basket.updateWith(item) {
                   case Some(existingQuantity) => Some(existingQuantity + quantity)
                   case None => Some(quantity)
                 }
-                calculateAndDisplayBasketTotal(basket.toMap, data) // Display running total
+                // Display the running total of the basket after adding the item
+                calculateAndDisplayBasketTotal(basket.toMap, data)
                 "continue"
               case _ =>
                 println("Invalid quantity. Please enter a positive number.")
@@ -227,6 +311,13 @@ object ShoppingManager {
     }
   }
 
+  /**
+   * Presents various options to the user for their shopping basket and handles the user's choice.
+   *
+   * @param basket The current shopping basket with items and quantities.
+   * @param data   The map of food items to their list of prices.
+   * @return A string indicating the next action (edit, clear, back, exit, or invalid).
+   */
   private def basketOptions(basket: scala.collection.mutable.Map[String, Float], data: Map[String, List[Int]]): String = {
     println("\nBasket Options:")
     println("1. Pay Now")
@@ -238,6 +329,7 @@ object ShoppingManager {
 
     readLine().trim match {
       case "1" =>
+        // Special message for a promotional event
         println("\nYou're our 1 billionth user and don't need to pay! Your order is on the way!")
         println("1. Main Menu")
         println("2. Exit")
@@ -245,6 +337,7 @@ object ShoppingManager {
         if (postPaymentChoice == "2") "exit" else "back"
       case "2" => "edit"
       case "3" =>
+        // Clearing the current shopping basket
         basket.clear()
         println("\nBasket has been cleared.")
         "clear"
@@ -256,6 +349,12 @@ object ShoppingManager {
     }
   }
 
+  /**
+   * Displays a list of available food items along with their current prices.
+   *
+   * @param foodItems A list of food item names.
+   * @param prices    The current prices of the food items.
+   */
   private def displayFoodListWithPrices(foodItems: List[String], prices: Map[String, Int]): Unit = {
     println("\nAvailable Food Items with Current Prices:")
     foodItems.zipWithIndex.foreach { case (food, index) =>
@@ -264,8 +363,15 @@ object ShoppingManager {
     }
   }
 
+  /**
+   * Calculates and displays the total value of the items in the shopping basket.
+   *
+   * @param basket The shopping basket with items and their quantities.
+   * @param data   The map of food items to their list of prices.
+   */
   private def calculateAndDisplayBasketTotal(basket: Map[String, Float], data: Map[String, List[Int]]): Unit = {
     val currentPrices = PriceAnalyser.getCurrentPrices(data)
+    // Calculating the total value of the basket
     val totalValue = basket.foldLeft(0f) { case (total, (item, quantity)) =>
       currentPrices.get(item) match {
         case Some(price) => total + price * quantity
