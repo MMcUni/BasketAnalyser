@@ -6,24 +6,26 @@ object PriceAnalyser {
   }
 
   def getMinMaxPrices(pricesData: Map[String, List[Int]]): Map[String, (Int, Int)] = {
-    pricesData.map { case (food, prices) => (food, (prices.min, prices.max)) }
+    pricesData.collect {
+      case (food, prices) if prices.nonEmpty =>
+        val (min, max) = prices.foldLeft((prices.head, prices.head)) { case ((min, max), p) =>
+          (math.min(min, p), math.max(max, p))
+        }
+        (food, (min, max))
+    }
   }
 
-  /**
-   * Calculates the median price from a list of prices.
-   *
-   * @param prices List of prices for a food item.
-   * @return The median price.
-   */
   def getMedianPrice(prices: List[Int]): Int = {
-    val sortedPrices = prices.sorted
-    val middle = sortedPrices.length / 2
-    if (sortedPrices.length % 2 == 0) {
-      // For even number of elements, take average of middle two
-      (sortedPrices(middle - 1) + sortedPrices(middle)) / 2
+    if (prices.isEmpty) {
+      throw new IllegalArgumentException("Price list cannot be empty")
     } else {
-      // For odd number of elements, take the middle one
-      sortedPrices(middle)
+      val sortedPrices = prices.sorted
+      val middle = sortedPrices.length / 2
+      if (sortedPrices.length % 2 == 0) {
+        (sortedPrices(middle - 1) + sortedPrices(middle)) / 2
+      } else {
+        sortedPrices(middle)
+      }
     }
   }
 
