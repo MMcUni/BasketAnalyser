@@ -25,7 +25,6 @@ object Main extends App {
   }
 }
 
-
 object MenuManager {
   def displayMainMenu(): Unit = {
     println("\nMain Menu:")
@@ -125,14 +124,11 @@ object PriceAnalysisManager {
       }
     }
 
-
-
     def displayLargestPriceIncrease(data: Map[String, List[Int]]): Unit = {
       val (food, increase) = PriceAnalyser.getLargestPriceIncrease(data)
       println(s"\nLargest Price Increase in Last 6 Months:")
       println(s"$food with an increase of £${increase.toDouble / 100}")
     }
-
 
     def displayFoodListWithNumbers(foodItems: List[String]): Unit = {
       println("\nAvailable Food Items:")
@@ -183,7 +179,6 @@ object PriceAnalysisManager {
     }
   }
 }
-
 
 object ShoppingManager {
   def goShopping(data: Map[String, List[Int]]): Unit = {

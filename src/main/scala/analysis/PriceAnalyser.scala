@@ -29,18 +29,22 @@ object PriceAnalyser {
     }
   }
 
-
   /**
    * Finds the food item with the largest price increase over the last 6 months.
+   *
+   * This method iterates through the prices only once, calculating the sum of the last 6 months
+   * and the previous 6 months simultaneously for efficiency.
    *
    * @param pricesData Map of food items with their monthly prices.
    * @return The food item with the largest price increase and the amount of increase.
    */
   def getLargestPriceIncrease(pricesData: Map[String, List[Int]]): (String, Int) = {
     pricesData.map { case (food, prices) =>
-      val last6Months = prices.takeRight(6)
-      val previous6Months = prices.dropRight(6).takeRight(6)
-      val increase = last6Months.sum - previous6Months.sum
+      val (last6MonthsSum, prev6MonthsSum) = prices.reverse.splitAt(6) match {
+        case (last6Months, previousMonths) =>
+          (last6Months.sum, previousMonths.take(6).sum)
+      }
+      val increase = last6MonthsSum - prev6MonthsSum
       (food, increase)
     }.maxBy(_._2)
   }
