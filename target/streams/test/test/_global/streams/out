@@ -13,11 +13,14 @@
 [0m[[0m[0minfo[0m] [0m[0m[32mPriceAnalyser[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32m- should correctly calculate the current (most recent) price for each food[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32m- should calculate the highest and lowest prices within the period for each food[0m[0m
-[0m[[0m[0mdebug[0m] [0m[0m    Produced 0 nested tasks and 2 events.[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mRun completed in 476 milliseconds.[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mTotal number of tests run: 4[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should correctly calculate the median price for each food[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should identify the food with the largest price increase over the last 6 months[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should correctly calculate the average price over a 2-year period for each food and compare them[0m[0m
+[0m[[0m[0mdebug[0m] [0m[0m    Produced 0 nested tasks and 5 events.[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mRun completed in 466 milliseconds.[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mTotal number of tests run: 7[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[36mSuites: completed 2, aborted 0[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mTests: succeeded 4, failed 0, canceled 0, ignored 0, pending 0[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mTests: succeeded 7, failed 0, canceled 0, ignored 0, pending 0[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mAll tests passed.[0m[0m
 [0m[[0m[0mdebug[0m] [0m[0mPassed tests:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	DataManagerTest[0m
