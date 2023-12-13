@@ -1,0 +1,30 @@
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(test, Some(e7b06cf2-04c8-49c1-a8aa-f7c5c9986249), Some(CommandSource(console0)))[0m
+[0m[[0m[0mdebug[0m] [0m[0mEvaluating tasks: Test / test[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning task... Cancel: Signal, check cycles: false, forcegc: true[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 1 Scala source to C:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\target\scala-2.13\test-classes ...[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mMenuManagerTest:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mMenuManager[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should display the correct main menu options[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should display the correct price analysis menu options[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mDataManagerTest:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mreadData[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should return a Success containing a Map for valid data[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should return a Failure for invalid data[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should correctly parse a valid line from the data file[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should return None for a line with invalid format[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should return None for a line with non-numeric price values[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mPriceAnalyserTest:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mPriceAnalyser[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should correctly calculate the current (most recent) price for each food[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should calculate the highest and lowest prices within the period for each food[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should correctly calculate the median price for each food[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should identify the food with the largest price increase over the last 6 months[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should correctly calculate the average price over a 2-year period for each food and compare them[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mRun completed in 433 milliseconds.[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mTotal number of tests run: 12[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mSuites: completed 3, aborted 0[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mTests: succeeded 12, failed 0, canceled 0, ignored 0, pending 0[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mAll tests passed.[0m[0m
+[0m[[0m[32msuccess[0m] [0m[0mTotal time: 1 s, completed 13 Dec 2023, 17:01:02[0m
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(shell, None, None)[0m
+[0m[[0m[0mdebug[0m] [0m[0mForcing garbage collection...[0m

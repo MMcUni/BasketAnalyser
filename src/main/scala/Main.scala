@@ -331,7 +331,7 @@ object ShoppingManager {
    * @param data   The map of food items to their list of prices.
    * @return A string indicating the next action (edit, clear, back, exit, or invalid).
    */
-  private def basketOptions(basket: scala.collection.mutable.Map[String, Float], data: Map[String, List[Int]]): String = {
+  def basketOptions(basket: scala.collection.mutable.Map[String, Float], data: Map[String, List[Int]]): String = { //public for testing
     println("\nBasket Options:")
     println("1. Pay Now")
     println("2. Edit Basket")

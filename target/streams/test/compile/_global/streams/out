@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\test\scala\DataManagerTest.scala:23:59: value getSomeData is not a member of object DataManager[0m
-[0m[[0m[31merror[0m] [0m[0m    val result: Option[(String, List[Int])] = DataManager.getSomeData()[0m
-[0m[[0m[31merror[0m] [0m[0m                                                          ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\G\Uni\Programming Paradigms\LabTasks\BasketAnalyser\src\test\scala\ShoppingManagerTest.scala:33:77: too many arguments (found 3, expected 2) for method basketOptions: (basket: scala.collection.mutable.Map[String,Float], data: Map[String,List[Int]]): String[0m
+[0m[[0m[31merror[0m] [0m[0m        ShoppingManager.basketOptions(basket, Map("APPLE" -> List(100)), () => scala.io.StdIn.readLine())[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                            ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

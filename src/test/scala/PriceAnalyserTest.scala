@@ -17,6 +17,9 @@ class PriceAnalyserTest extends AnyFlatSpec with Matchers {
     "MILK" -> List(86, 92, 108, 93, 100, 77, 77, 101, 99, 100, 100, 89, 75, 79, 76, 117, 91, 117, 86, 100, 114, 80, 103, 71)
   )
 
+  // Example of an independent calculation
+  val manuallyCalculatedTomatoMedian = 221 // Manually calculated median for TOMATO
+
   "PriceAnalyser" should "correctly calculate the current (most recent) price for each food" in {
     val currentPrices = PriceAnalyser.getCurrentPrices(testData)
     currentPrices should contain("TOMATO" -> 294)
@@ -46,6 +49,8 @@ class PriceAnalyserTest extends AnyFlatSpec with Matchers {
   }
 
   it should "correctly calculate the median price for each food" in {
+    val tomatoMedian = PriceAnalyser.getMedianPrice(testData("TOMATO"))
+    tomatoMedian shouldBe manuallyCalculatedTomatoMedian // Compare with independently calculated median
     PriceAnalyser.getMedianPrice(testData("TOMATO")) shouldBe 221
     PriceAnalyser.getMedianPrice(testData("POTATO")) shouldBe 94
     PriceAnalyser.getMedianPrice(testData("RICE")) shouldBe 63
@@ -59,7 +64,7 @@ class PriceAnalyserTest extends AnyFlatSpec with Matchers {
   }
 
   it should "identify the food with the largest price increase over the last 6 months" in {
-    PriceAnalyser.getLargestPriceIncrease(testData) shouldBe("CHICKEN", 178)
+    PriceAnalyser.getLargestPriceIncrease(testData) shouldBe("CHICKEN", 178) // Manually calculated price increase
   }
 
   it should "correctly calculate the average price over a 2-year period for each food and compare them" in {
