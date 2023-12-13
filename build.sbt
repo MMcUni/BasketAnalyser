@@ -9,5 +9,5 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.10" % Test
 )
 
-// Ensures that the test configurations are added to your project
+// Ensures that the test configurations are added to project
 Test / fork := true

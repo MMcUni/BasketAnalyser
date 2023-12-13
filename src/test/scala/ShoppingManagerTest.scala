@@ -5,11 +5,10 @@ import scala.collection.mutable
 
 class ShoppingManagerTest extends AnyFlatSpec with Matchers {
 
-  // Mock data for testing, mirroring your application's data structure
+  // Mock data for testing
   val testData: Map[String, List[Int]] = Map(
     "TOMATO" -> List(294, 258, 291, 173, 211, 167, 257, 261, 172, 159, 204, 279, 164, 299, 243, 174, 287, 168, 162, 316, 251, 188, 232),
     "POTATO" -> List(73, 137, 121, 89, 123, 65, 119, 68, 103, 87, 67, 121, 55, 78, 56, 100, 124, 123, 57, 124, 130, 130, 78, 65)
-    // Add more items based on your data.txt file
   )
 
   "ShoppingManager" should "calculate the total value of the basket correctly" in {
@@ -20,7 +19,7 @@ class ShoppingManagerTest extends AnyFlatSpec with Matchers {
       total + (pricesData.getOrElse(item, 0) * quantity)
     }
 
-    totalValue shouldBe 659.0f  // Corrected expected value
+    totalValue shouldBe 659.0f  // Manually calculated expected value
   }
 
   it should "clear the basket correctly" in {
@@ -35,7 +34,7 @@ class ShoppingManagerTest extends AnyFlatSpec with Matchers {
 
     // Simulating adding "TOMATO" to the basket
     val item = "TOMATO"
-    val quantity = 1.5f  // Simulating 1.5 kg of tomatoes
+    val quantity = 1.5f  // Simulating 1.5 of tomatoes
     basket.updateWith(item) {
       case Some(existingQuantity) => Some(existingQuantity + quantity)
       case None => Some(quantity)
@@ -52,6 +51,6 @@ class ShoppingManagerTest extends AnyFlatSpec with Matchers {
       total + (currentPrices.getOrElse(item, 0) * quantity)
     }
 
-    totalValue shouldBe 348.0f  // Corrected expected value
+    totalValue shouldBe 348.0f  // Manually calculated expected value
   }
 }

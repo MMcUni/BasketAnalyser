@@ -18,6 +18,7 @@ object Main extends App {
     case Failure(exception) => println(s"Error reading data: ${exception.getMessage}")
   }
 
+
   /**
    * Runs the main application loop.
    * The method is tail-recursive to handle the repetitive user interaction.
@@ -31,12 +32,6 @@ object Main extends App {
       case "3" => // Exits the loop, effectively stopping the application
       case _ => println("Invalid choice. Please try again."); runAppLoop(data)
     }
-  }
-
-  // Initial call to runAppLoop with the data
-  DataManager.readData() match {
-    case Success(data) => runAppLoop(data)
-    case Failure(exception) => println(s"Error reading data: ${exception.getMessage}")
   }
 }
 
@@ -90,6 +85,7 @@ object DataManager {
       }.toMap
     }
   }
+
 
   /**
    * Parses a line from the file into a key-value pair.
