@@ -22,16 +22,27 @@ BasketAnalyzer is a Scala-based application that offers insightful analysis of f
 - [x] Implement average price comparison over 2 years for selected items.
 - [x] Develop shopping basket feature to calculate total basket value.
 - [x] Design a user-friendly text-based interface with a menu.
-- [ ] Write comprehensive unit tests for each analysis function.
-- [ ] Document the application, including test plans and results.
-- [ ] Write an evaluation report discussing functional thinking, programming style, and the comparison of functional and imperative styles (800-1000 words).
-- [ ] Finalize and clean up the code for submission.
+- [x] Write comprehensive unit tests for each analysis function.
+- [x] Document the application, including test plans and results.
+- [x] Write an evaluation report discussing functional thinking, programming style, and the comparison of functional and imperative styles (800-1000 words).
+- [x] Finalize and clean up the code for submission.
 
 ## Installation and Usage
-Instructions on setting up and running the application will be added soon.
+To set up and run BasketAnalyzer, follow these steps:
+
+Ensure Scala and sbt (Scala Build Tool) are installed on your system.
+Clone the BasketAnalyzer repository from GitHub or download the source code.
+Navigate to the root directory of the project.
+Run the application using the command: sbt run.
+Follow the on-screen instructions to interact with the application.
 
 ## Contributing
-Details on how to contribute to this project will be provided shortly.
+If you are interested in contributing to BasketAnalyzer, please follow these guidelines:
+
+Fork the GitHub repository.
+Create a new branch for your feature or bug fix.
+Write and test your code.
+Submit a pull request with a detailed description of your changes.
 
 ## License
-Information about the project's licensing will be added in this section.
+BasketAnalyzer is licensed under the MIT License. For more information, please refer to the LICENSE file in the project repository.
