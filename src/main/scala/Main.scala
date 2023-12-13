@@ -272,6 +272,12 @@ object ShoppingManager {
     var shoppingOption = "continue"
     while (shoppingOption != "back" && shoppingOption != "exit") {
       shoppingOption = handleShopping(basket, data, currentPrices)
+
+      if (shoppingOption == "clear") {
+        basket.clear()  // Clear the basket
+        println("\nReturning to main menu with an empty basket...")
+        return  // Return to main menu
+      }
     }
   }
 
