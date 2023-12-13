@@ -18,6 +18,19 @@ class DataManagerTest extends AnyFlatSpec with Matchers {
     DataManager.filename = originalFilename // Reset the filename after test
   }
 
-  // ... other test cases for DataManager if any ...
+  it should "correctly parse a valid line from the data file" in {
+    val line = "APPLE, 100, 150, 200"
+    val result = DataManager.parseLine(line)
+    result shouldBe Some("APPLE", List(100, 150, 200))
+  }
 
+  it should "return None for a line with invalid format" in {
+    val invalidLine = "INVALID_LINE"
+    DataManager.parseLine(invalidLine) shouldBe None
+  }
+
+  it should "return None for a line with non-numeric price values" in {
+    val lineWithNonNumericValues = "APPLE, 100, abc, 200"
+    DataManager.parseLine(lineWithNonNumericValues) shouldBe None
+  }
 }

@@ -2,13 +2,7 @@
 [0m[[0m[0mdebug[0m] [0m[0mForking tests - parallelism = false[0m
 [0m[[0m[0mdebug[0m] [0m[0mCreate a single-thread test executor[0m
 [0m[[0m[0mdebug[0m] [0m[0mRunner for org.scalatest.tools.Framework produced 2 initial tasks for 2 tests.[0m
-[0m[[0m[0mdebug[0m] [0m[0m  Running TaskDef(DataManagerTest, sbt.ForkMain$SubclassFingerscan@2c6a3f77, false, [SuiteSelector])[0m
-[0m[[0m[0minfo[0m] [0m[0m[32mDataManagerTest:[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[32mreadData[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[32m- should return a Success containing a Map for valid data[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[32m- should return a Failure for invalid data[0m[0m
-[0m[[0m[0mdebug[0m] [0m[0m    Produced 0 nested tasks and 2 events.[0m
-[0m[[0m[0mdebug[0m] [0m[0m  Running TaskDef(PriceAnalyserTest, sbt.ForkMain$SubclassFingerscan@246ae04d, false, [SuiteSelector])[0m
+[0m[[0m[0mdebug[0m] [0m[0m  Running TaskDef(PriceAnalyserTest, sbt.ForkMain$SubclassFingerscan@2c6a3f77, false, [SuiteSelector])[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mPriceAnalyserTest:[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mPriceAnalyser[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32m- should correctly calculate the current (most recent) price for each food[0m[0m
@@ -17,10 +11,19 @@
 [0m[[0m[0minfo[0m] [0m[0m[32m- should identify the food with the largest price increase over the last 6 months[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32m- should correctly calculate the average price over a 2-year period for each food and compare them[0m[0m
 [0m[[0m[0mdebug[0m] [0m[0m    Produced 0 nested tasks and 5 events.[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mRun completed in 466 milliseconds.[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mTotal number of tests run: 7[0m[0m
+[0m[[0m[0mdebug[0m] [0m[0m  Running TaskDef(DataManagerTest, sbt.ForkMain$SubclassFingerscan@246ae04d, false, [SuiteSelector])[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mDataManagerTest:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mreadData[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should return a Success containing a Map for valid data[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should return a Failure for invalid data[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should correctly parse a valid line from the data file[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should return None for a line with invalid format[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should return None for a line with non-numeric price values[0m[0m
+[0m[[0m[0mdebug[0m] [0m[0m    Produced 0 nested tasks and 5 events.[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mRun completed in 485 milliseconds.[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mTotal number of tests run: 10[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[36mSuites: completed 2, aborted 0[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mTests: succeeded 7, failed 0, canceled 0, ignored 0, pending 0[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mTests: succeeded 10, failed 0, canceled 0, ignored 0, pending 0[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mAll tests passed.[0m[0m
 [0m[[0m[0mdebug[0m] [0m[0mPassed tests:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	DataManagerTest[0m
