@@ -1,4 +1,5 @@
 #Successful Tests
-#Wed Dec 13 15:58:22 GMT 2023
-DataManagerTest=1702483102521
-PriceAnalyserTest=1702483102510
+#Wed Dec 13 16:03:40 GMT 2023
+DataManagerTest=1702483420211
+MenuManagerTest=1702483420215
+PriceAnalyserTest=1702483420201
