@@ -1,7 +1,9 @@
-import analysis.PriceAnalyser
-import scala.io.Source
-import scala.util.{Failure, Success, Try, Using}
+import scala.annotation.tailrec
 import scala.io.StdIn.readLine
+import analysis.PriceAnalyser
+import scala.util.{Failure, Success, Try, Using}
+import scala.io.Source
+import java.io.IOException
 
 /**
  * The main application object.
@@ -12,29 +14,29 @@ object Main extends App {
 
   // Attempt to read data and handle success or failure
   DataManager.readData() match {
-    case Success(data) => runApp(data) // On successful data read, run the application
-    case Failure(exception) => println(s"Error reading data: ${exception.getMessage}") // Handle data reading errors
+    case Success(data) => runAppLoop(data)  // Replace runApp with runAppLoop
+    case Failure(exception) => println(s"Error reading data: ${exception.getMessage}")
   }
 
   /**
    * Runs the main application loop.
-   *
-   * @param data The data loaded from the data source.
+   * The method is tail-recursive to handle the repetitive user interaction.
    */
-  private def runApp(data: Map[String, List[Int]]): Unit = {
-    var continueRunning = true
-    while (continueRunning) {
-      MenuManager.displayMainMenu()
-      val choice = readLine()
-
-      // Handle user choice
-      choice match {
-        case "1" => PriceAnalysisManager.performPriceAnalysis(data)
-        case "2" => ShoppingManager.goShopping(data)
-        case "3" => continueRunning = false // Exit the loop to terminate the application
-        case _ => println("Invalid choice. Please try again.")
-      }
+  @tailrec
+  private def runAppLoop(data: Map[String, List[Int]]): Unit = {
+    MenuManager.displayMainMenu()
+    readLine() match {
+      case "1" => PriceAnalysisManager.performPriceAnalysis(data); runAppLoop(data)
+      case "2" => ShoppingManager.goShopping(data); runAppLoop(data)
+      case "3" => // Exits the loop, effectively stopping the application
+      case _ => println("Invalid choice. Please try again."); runAppLoop(data)
     }
+  }
+
+  // Initial call to runAppLoop with the data
+  DataManager.readData() match {
+    case Success(data) => runAppLoop(data)
+    case Failure(exception) => println(s"Error reading data: ${exception.getMessage}")
   }
 }
 
@@ -73,7 +75,7 @@ object MenuManager {
  * DataManager is responsible for reading and parsing data from a file.
  */
 object DataManager {
-  var filename = "src/main/data.txt"  // Default filename for the data source
+  var filename = "src/main/data.txt"
 
   /**
    * Reads data from a file and parses it into a Map.
@@ -119,128 +121,133 @@ object PriceAnalysisManager {
     var continueAnalysis = true
     while (continueAnalysis) {
       MenuManager.displayPriceAnalysisMenu()
-      val choice = readLine()
-
-      // Handle user's choice for different analyses
-      choice match {
-        case "1" => displayCurrentPrices(data)
-        case "2" => displayPriceRange(data)
-        case "3" => displayMedianPrices(data)
-        case "4" => displayLargestPriceIncrease(data)
-        case "5" => compareAveragePrices(data)
-        case "6" => continueAnalysis = false // Exit the analysis loop
-        case _ => println("Invalid choice. Please try again.")
-      }
-    }
-
-    /**
-     * Displays the current food prices to the console.
-     */
-    def displayCurrentPrices(data: Map[String, List[Int]]): Unit = {
-      val currentPrices = PriceAnalyser.getCurrentPrices(data)
-      println("\nCurrent Food Prices:")
-      currentPrices.foreach { case (food, price) =>
-        println(s"$food: £${price.toDouble / 100}")
-      }
-    }
-
-    /**
-     * Displays the price range (minimum and maximum prices) for each food item to the console.
-     */
-    def displayPriceRange(data: Map[String, List[Int]]): Unit = {
-      val minMaxPrices = PriceAnalyser.getMinMaxPrices(data)
-      println("\nPrice Range (Min and Max) for Each Food Item:")
-      minMaxPrices.foreach { case (food, (min, max)) => println(s"$food: Min = £${min.toDouble / 100}, Max = £${max.toDouble / 100}") }
-    }
-
-    /**
-     * Displays median prices for each food item in the data.
-     *
-     * @param data The map of food items to their list of prices.
-     */
-    def displayMedianPrices(data: Map[String, List[Int]]): Unit = {
-      if (data.isEmpty) {
-        println("No data available to display median prices.")
-      } else {
-        println("\nMedian Prices for Each Food Item:")
-        data.foreach { case (food, prices) =>
-          if (prices.isEmpty) {
-            println(s"Warning: No price data available for $food.")
-          } else {
-            val medianPrice = PriceAnalyser.getMedianPrice(prices)
-            println(s"$food: Median Price = £${medianPrice.toDouble / 100}")
-          }
-        }
-      }
-    }
-
-    /**
-     * Displays the food item with the largest price increase over the last 6 months.
-     *
-     * @param data The map of food items to their list of prices.
-     */
-    def displayLargestPriceIncrease(data: Map[String, List[Int]]): Unit = {
-      val (food, increase) = PriceAnalyser.getLargestPriceIncrease(data)
-      println(s"\nLargest Price Increase in Last 6 Months:")
-      println(s"$food with an increase of £${increase.toDouble / 100}")
-    }
-
-    /**
-     * Displays a list of food items with their corresponding index numbers.
-     *
-     * @param foodItems The list of food item names.
-     */
-    def displayFoodListWithNumbers(foodItems: List[String]): Unit = {
-      println("\nAvailable Food Items:")
-      foodItems.zipWithIndex.foreach { case (food, index) =>
-        println(s"${index + 1}. $food")
-      }
-    }
-
-    /**
-     * Allows the user to compare the average prices of two selected food items over a 2-year period.
-     *
-     * @param data The map of food items to their list of prices.
-     */
-    def compareAveragePrices(data: Map[String, List[Int]]): Unit = {
-      val foodItems = data.keys.toList
-      displayFoodListWithNumbers(foodItems)
-
       try {
-        println("\nEnter the number for the first food item:")
-        val firstIndex = scala.io.StdIn.readInt() - 1
-        println("Enter the number for the second food item:")
-        val secondIndex = scala.io.StdIn.readInt() - 1
+        val choice = readLine()
 
-        val firstFood = foodItems.lift(firstIndex).getOrElse("Unknown")
-        val secondFood = foodItems.lift(secondIndex).getOrElse("Unknown")
-
-        if (firstFood == "Unknown" || secondFood == "Unknown") {
-          println("Invalid selection. Please enter valid food item numbers.")
-        } else {
-          val firstAvg = data.get(firstFood).map(PriceAnalyser.getAveragePrice).getOrElse(0.0)
-          val secondAvg = data.get(secondFood).map(PriceAnalyser.getAveragePrice).getOrElse(0.0)
-
-          println(s"\nAverage Price Comparison:")
-          println(f"$firstFood: £${firstAvg / 100}%.2f")
-          println(f"$secondFood: £${secondAvg / 100}%.2f")
-
-          // Summary of the comparison
-          if (firstAvg != 0.0 && secondAvg != 0.0) {
-            val difference = (firstAvg - secondAvg).abs
-            val summary = if (firstAvg > secondAvg) {
-              f"Over the last 2 years, $firstFood is £${difference / 100}%.2f more expensive than $secondFood."
-            } else if (secondAvg > firstAvg) {
-              f"Over the last 2 years, $secondFood is £${difference / 100}%.2f more expensive than $firstFood."
-            } else {
-              s"Over the last 2 years, $firstFood and $secondFood have the same average price."
-            }
-            println(summary)
-          }
+        // Handle user's choice for different analyses
+        choice match {
+          case "1" => displayCurrentPrices(data)
+          case "2" => displayPriceRange(data)
+          case "3" => displayMedianPrices(data)
+          case "4" => displayLargestPriceIncrease(data)
+          case "5" => compareAveragePrices(data)
+          case "6" => continueAnalysis = false // Exit the analysis loop
+          case _ => println("Invalid choice. Please try again.")
         }
       } catch {
-        case _: NumberFormatException => println("Invalid input. Please enter a number.")
+        case e: IOException => println("Error reading input. Please try again.")
+        case _: Throwable => println("An unexpected error occurred.")
       }
+    }
+  }
+
+  /**
+   * Displays the current food prices to the console.
+   */
+  def displayCurrentPrices(data: Map[String, List[Int]]): Unit = {
+    val currentPrices = PriceAnalyser.getCurrentPrices(data)
+    println("\nCurrent Food Prices:")
+    currentPrices.foreach { case (food, price) =>
+      println(s"$food: £${price.toDouble / 100}")
+    }
+  }
+
+  /**
+   * Displays the price range (minimum and maximum prices) for each food item to the console.
+   */
+  def displayPriceRange(data: Map[String, List[Int]]): Unit = {
+    val minMaxPrices = PriceAnalyser.getMinMaxPrices(data)
+    println("\nPrice Range (Min and Max) for Each Food Item:")
+    minMaxPrices.foreach { case (food, (min, max)) => println(s"$food: Min = £${min.toDouble / 100}, Max = £${max.toDouble / 100}") }
+  }
+
+  /**
+   * Displays median prices for each food item in the data.
+   *
+   * @param data The map of food items to their list of prices.
+   */
+  def displayMedianPrices(data: Map[String, List[Int]]): Unit = {
+    if (data.isEmpty) {
+      println("No data available to display median prices.")
+    } else {
+      println("\nMedian Prices for Each Food Item:")
+      data.foreach { case (food, prices) =>
+        if (prices.isEmpty) {
+          println(s"Warning: No price data available for $food.")
+        } else {
+          val medianPrice = PriceAnalyser.getMedianPrice(prices)
+          println(s"$food: Median Price = £${medianPrice.toDouble / 100}")
+        }
+      }
+    }
+  }
+
+  /**
+   * Displays the food item with the largest price increase over the last 6 months.
+   *
+   * @param data The map of food items to their list of prices.
+   */
+  def displayLargestPriceIncrease(data: Map[String, List[Int]]): Unit = {
+    val (food, increase) = PriceAnalyser.getLargestPriceIncrease(data)
+    println(s"\nLargest Price Increase in Last 6 Months:")
+    println(s"$food with an increase of £${increase.toDouble / 100}")
+  }
+
+  /**
+   * Displays a list of food items with their corresponding index numbers.
+   *
+   * @param foodItems The list of food item names.
+   */
+  def displayFoodListWithNumbers(foodItems: List[String]): Unit = {
+    println("\nAvailable Food Items:")
+    foodItems.zipWithIndex.foreach { case (food, index) =>
+      println(s"${index + 1}. $food")
+    }
+  }
+
+  /**
+   * Allows the user to compare the average prices of two selected food items over a 2-year period.
+   *
+   * @param data The map of food items to their list of prices.
+   */
+  def compareAveragePrices(data: Map[String, List[Int]]): Unit = {
+    val foodItems = data.keys.toList
+    displayFoodListWithNumbers(foodItems)
+
+    try {
+      println("\nEnter the number for the first food item:")
+      val firstIndex = scala.io.StdIn.readInt() - 1
+      println("Enter the number for the second food item:")
+      val secondIndex = scala.io.StdIn.readInt() - 1
+
+      val firstFood = foodItems.lift(firstIndex).getOrElse("Unknown")
+      val secondFood = foodItems.lift(secondIndex).getOrElse("Unknown")
+
+      if (firstFood == "Unknown" || secondFood == "Unknown") {
+        println("Invalid selection. Please enter valid food item numbers.")
+      } else {
+        val firstAvg = data.get(firstFood).map(PriceAnalyser.getAveragePrice).getOrElse(0.0)
+        val secondAvg = data.get(secondFood).map(PriceAnalyser.getAveragePrice).getOrElse(0.0)
+
+        println(s"\nAverage Price Comparison:")
+        println(f"$firstFood: £${firstAvg / 100}%.2f")
+        println(f"$secondFood: £${secondAvg / 100}%.2f")
+
+        // Summary of the comparison
+        if (firstAvg != 0.0 && secondAvg != 0.0) {
+          val difference = (firstAvg - secondAvg).abs
+          val summary = if (firstAvg > secondAvg) {
+            f"Over the last 2 years, $firstFood is £${difference / 100}%.2f more expensive than $secondFood."
+          } else if (secondAvg > firstAvg) {
+            f"Over the last 2 years, $secondFood is £${difference / 100}%.2f more expensive than $firstFood."
+          } else {
+            s"Over the last 2 years, $firstFood and $secondFood have the same average price."
+          }
+          println(summary)
+        }
+      }
+    } catch {
+      case _: NumberFormatException => println("Invalid input. Please enter a number.")
     }
   }
 }
